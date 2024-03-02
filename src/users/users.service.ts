@@ -4,7 +4,7 @@ import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { CreateUserDto } from './dto/create-user.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
-import { UserRepository } from './infrastructure/persistence/user.repository';
+import { UserRepository } from './infrastructure/persistence/repositories/user.repository';
 import { DeepPartial } from 'src/utils/types/deep-partial.type';
 import { User } from './domain/user';
 import { StatusEnum } from 'src/statuses/statuses.enum';
@@ -100,7 +100,7 @@ export class UsersService {
       }
     }
 
-    return this.usersRepository.create(clonedPayload);
+    return this.usersRepository.create(clonedPayload as User);
   }
 
   findManyWithPagination({
@@ -207,7 +207,7 @@ export class UsersService {
       }
     }
 
-    return this.usersRepository.update(id, clonedPayload);
+    return this.usersRepository.update(id, clonedPayload as User);
   }
 
   async softDelete(id: User['id']): Promise<void> {

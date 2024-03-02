@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { FileRepository } from '../../persistence/file.repository';
+import { FileRepository } from 'src/files/infrastructure/persistence/repositories/file.repository';
 import { FileType } from 'src/files/domain/file';
 import { FileUploadDto } from './dto/file.dto';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';

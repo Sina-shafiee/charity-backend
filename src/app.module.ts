@@ -21,9 +21,6 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MongooseConfigService } from './database/mongoose-config.service';
-import { DatabaseConfig } from './database/config/database-config.type';
 
 @Module({
   imports: [
@@ -39,16 +36,12 @@ import { DatabaseConfig } from './database/config/database-config.type';
       ],
       envFilePath: ['.env'],
     }),
-    (databaseConfig() as DatabaseConfig).isDocumentDatabase
-      ? MongooseModule.forRootAsync({
-          useClass: MongooseConfigService,
-        })
-      : TypeOrmModule.forRootAsync({
-          useClass: TypeOrmConfigService,
-          dataSourceFactory: async (options: DataSourceOptions) => {
-            return new DataSource(options).initialize();
-          },
-        }),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+      dataSourceFactory: async (options: DataSourceOptions) => {
+        return new DataSource(options).initialize();
+      },
+    }),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService<AllConfigType>) => ({
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {

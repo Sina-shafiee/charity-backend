@@ -9,16 +9,16 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
-import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
-import { FileEntity } from '../../../../../files/infrastructure/persistence/relational/entities/file.entity';
+import { RoleEntity } from 'src/roles/infrastructure/persistence/entities/role.entity';
+import { StatusEntity } from 'src/statuses/infrastructure/persistence/entities/status.entity';
+import { FileEntity } from 'src/files/infrastructure/persistence/entities/file.entity';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 // We use class-transformer in ORM entity and domain entity.
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
-import { User } from '../../../../domain/user';
+import { User } from '../../../domain/user';
 
 @Entity({
   name: 'user',
@@ -76,6 +76,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
     eager: true,
   })
   status?: StatusEntity;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  emailVerified: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;

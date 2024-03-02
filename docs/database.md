@@ -136,107 +136,106 @@ npm run seed:run:relational
 
 1. Install faker:
 
-    ```bash
-    npm i --save-dev @faker-js/faker
-    ```
+   ```bash
+   npm i --save-dev @faker-js/faker
+   ```
 
 1. Create `src/database/seeds/user/user.factory.ts`:
 
-    ```ts
-    import { faker } from '@faker-js/faker';
-    import { RoleEnum } from 'src/roles/roles.enum';
-    import { StatusEnum } from 'src/statuses/statuses.enum';
-    import { Injectable } from '@nestjs/common';
-    import { InjectRepository } from '@nestjs/typeorm';
-    import { Repository } from 'typeorm';
-    import { Role } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-    import { Status } from 'src/statuses/infrastructure/persistence/relational/entities/status.entity';
-    import { User } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
+   ```ts
+   import { faker } from '@faker-js/faker';
+   import { RoleEnum } from 'src/roles/roles.enum';
+   import { StatusEnum } from 'src/statuses/statuses.enum';
+   import { Injectable } from '@nestjs/common';
+   import { InjectRepository } from '@nestjs/typeorm';
+   import { Repository } from 'typeorm';
+   import { Role } from 'src/roles/infrastructure/persistence/entities/role.entity';
+   import { Status } from 'src/statuses/infrastructure/persistence/entities/status.entity';
+   import { User } from 'src/users/infrastructure/persistence/entities/user.entity';
 
-    @Injectable()
-    export class UserFactory {
-      constructor(
-        @InjectRepository(User)
-        private repositoryUser: Repository<User>,
-        @InjectRepository(Role)
-        private repositoryRole: Repository<Role>,
-        @InjectRepository(Status)
-        private repositoryStatus: Repository<Status>,
-      ) {}
+   @Injectable()
+   export class UserFactory {
+     constructor(
+       @InjectRepository(User)
+       private repositoryUser: Repository<User>,
+       @InjectRepository(Role)
+       private repositoryRole: Repository<Role>,
+       @InjectRepository(Status)
+       private repositoryStatus: Repository<Status>,
+     ) {}
 
-      createRandomUser() {
-        // Need for saving "this" context
-        return () => {
-          return this.repositoryUser.create({
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
-            email: faker.internet.email(),
-            password: faker.internet.password(),
-            role: this.repositoryRole.create({
-              id: RoleEnum.user,
-              name: 'User',
-            }),
-            status: this.repositoryStatus.create({
-              id: StatusEnum.active,
-              name: 'Active',
-            }),
-          });
-        };
-      }
-    }
-    ```
+     createRandomUser() {
+       // Need for saving "this" context
+       return () => {
+         return this.repositoryUser.create({
+           firstName: faker.person.firstName(),
+           lastName: faker.person.lastName(),
+           email: faker.internet.email(),
+           password: faker.internet.password(),
+           role: this.repositoryRole.create({
+             id: RoleEnum.user,
+             name: 'User',
+           }),
+           status: this.repositoryStatus.create({
+             id: StatusEnum.active,
+             name: 'Active',
+           }),
+         });
+       };
+     }
+   }
+   ```
 
 1. Make changes in `src/database/seeds/user/user-seed.service.ts`:
 
-    ```ts
-    // Some code here...
-    import { UserFactory } from './user.factory';
-    import { faker } from '@faker-js/faker';
+   ```ts
+   // Some code here...
+   import { UserFactory } from './user.factory';
+   import { faker } from '@faker-js/faker';
 
-    @Injectable()
-    export class UserSeedService {
-      constructor(
-        // Some code here...
-        private userFactory: UserFactory,
-      ) {}
+   @Injectable()
+   export class UserSeedService {
+     constructor(
+       // Some code here...
+       private userFactory: UserFactory,
+     ) {}
 
-      async run() {
-        // Some code here...
+     async run() {
+       // Some code here...
 
-        await this.repository.save(
-          faker.helpers.multiple(this.userFactory.createRandomUser(), {
-            count: 5,
-          }),
-        );
-      }
-    }
-    ```
+       await this.repository.save(
+         faker.helpers.multiple(this.userFactory.createRandomUser(), {
+           count: 5,
+         }),
+       );
+     }
+   }
+   ```
 
 1. Make changes in `src/database/seeds/user/user-seed.module.ts`:
 
-    ```ts
-    import { Module } from '@nestjs/common';
-    import { TypeOrmModule } from '@nestjs/typeorm';
-    import { User } from 'src/users/entities/user.entity';
-    import { UserSeedService } from './user-seed.service';
-    import { UserFactory } from './user.factory';
-    import { Role } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-    import { Status } from 'src/statuses/infrastructure/persistence/relational/entities/status.entity';
+   ```ts
+   import { Module } from '@nestjs/common';
+   import { TypeOrmModule } from '@nestjs/typeorm';
+   import { User } from 'src/users/entities/user.entity';
+   import { UserSeedService } from './user-seed.service';
+   import { UserFactory } from './user.factory';
+   import { Role } from 'src/roles/infrastructure/persistence/entities/role.entity';
+   import { Status } from 'src/statuses/infrastructure/persistence/entities/status.entity';
 
-    @Module({
-      imports: [TypeOrmModule.forFeature([User, Role, Status])],
-      providers: [UserSeedService, UserFactory],
-      exports: [UserSeedService, UserFactory],
-    })
-    export class UserSeedModule {}
-
-    ```
+   @Module({
+     imports: [TypeOrmModule.forFeature([User, Role, Status])],
+     providers: [UserSeedService, UserFactory],
+     exports: [UserSeedService, UserFactory],
+   })
+   export class UserSeedModule {}
+   ```
 
 1. Run seed:
 
-    ```bash
-    npm run seed:run
-    ```
+   ```bash
+   npm run seed:run
+   ```
 
 ---
 

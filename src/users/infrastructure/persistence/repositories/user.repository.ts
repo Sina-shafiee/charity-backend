@@ -4,14 +4,13 @@ import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
-import { User } from '../../../../domain/user';
-import { UserRepository } from '../../user.repository';
+import { NullableType } from '../../../../utils/types/nullable.type';
+import { FilterUserDto, SortUserDto } from '../../../dto/query-user.dto';
+import { User } from '../../../domain/user';
 import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
-export class UsersRelationalRepository implements UserRepository {
+export class UserRepository {
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,

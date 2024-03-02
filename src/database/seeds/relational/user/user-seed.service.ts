@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { StatusEnum } from 'src/statuses/statuses.enum';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
-import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
+import { UserEntity } from 'src/users/infrastructure/persistence/entities/user.entity';
 import { RoleEnum } from 'src/roles/roles.enum';
 
 @Injectable()
@@ -40,6 +40,7 @@ export class UserSeedService {
             id: StatusEnum.active,
             name: 'Active',
           },
+          emailVerified: new Date(),
         }),
       );
     }
@@ -64,12 +65,42 @@ export class UserSeedService {
           password,
           role: {
             id: RoleEnum.user,
-            name: 'Admin',
+            name: 'User',
           },
           status: {
             id: StatusEnum.active,
             name: 'Active',
           },
+        }),
+      );
+    }
+    const countVolunteer = await this.repository.count({
+      where: {
+        role: {
+          id: RoleEnum.volunteer,
+        },
+      },
+    });
+
+    if (!countVolunteer) {
+      const salt = await bcrypt.genSalt();
+      const password = await bcrypt.hash('secret', salt);
+
+      await this.repository.save(
+        this.repository.create({
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe2@example.com',
+          password,
+          role: {
+            id: RoleEnum.volunteer,
+            name: 'Volunteer',
+          },
+          status: {
+            id: StatusEnum.active,
+            name: 'Active',
+          },
+          emailVerified: new Date(),
         }),
       );
     }

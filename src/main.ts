@@ -1,13 +1,11 @@
 import 'dotenv/config';
-import {
-  ClassSerializerInterceptor,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import { I18nValidationPipe } from 'nestjs-i18n';
+
 import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
@@ -28,7 +26,7 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-  app.useGlobalPipes(new ValidationPipe(validationOptions));
+  app.useGlobalPipes(new I18nValidationPipe(validationOptions));
   app.useGlobalInterceptors(
     // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
     // https://github.com/typestack/class-transformer/issues/549

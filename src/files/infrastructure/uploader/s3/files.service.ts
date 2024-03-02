@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { FileRepository } from '../../persistence/file.repository';
+import { FileRepository } from 'src/files/infrastructure/persistence/repositories/file.repository';
 import { FileType } from 'src/files/domain/file';
 
 @Injectable()

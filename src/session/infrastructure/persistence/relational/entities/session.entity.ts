@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
+import { UserEntity } from 'src/users/infrastructure/persistence/entities/user.entity';
 import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
 import { Session } from '../../../../domain/session';
 

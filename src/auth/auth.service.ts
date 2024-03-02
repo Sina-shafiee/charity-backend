@@ -65,6 +65,15 @@ export class AuthService {
       );
     }
 
+    if (!user.emailVerified) {
+      await this.mailService.userSignUp({
+        to: user.email!,
+        data: {
+          token: 112122,
+        },
+      });
+    }
+
     if (!user.password) {
       throw new HttpException(
         {
@@ -198,35 +207,21 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const user = await this.usersService.create({
+    await this.usersService.create({
       ...dto,
       email: dto.email,
       role: {
         id: RoleEnum.user,
       },
       status: {
-        id: StatusEnum.inactive,
+        id: StatusEnum.active,
       },
     });
-
-    const hash = await this.jwtService.signAsync(
-      {
-        confirmEmailUserId: user.id,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-          infer: true,
-        }),
-      },
-    );
 
     await this.mailService.userSignUp({
       to: dto.email,
       data: {
-        hash,
+        token: 112121,
       },
     });
   }

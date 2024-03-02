@@ -1,9 +1,9 @@
-import { RoleEntity } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-import { User } from '../../../../domain/user';
+import { RoleEntity } from 'src/roles/infrastructure/persistence/entities/role.entity';
+import { User } from '../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
-import { FileEntity } from 'src/files/infrastructure/persistence/relational/entities/file.entity';
-import { StatusEntity } from 'src/statuses/infrastructure/persistence/relational/entities/status.entity';
-import { FileMapper } from 'src/files/infrastructure/persistence/relational/mappers/file.mapper';
+import { FileEntity } from 'src/files/infrastructure/persistence/entities/file.entity';
+import { StatusEntity } from 'src/statuses/infrastructure/persistence/entities/status.entity';
+import { FileMapper } from 'src/files/infrastructure/persistence/mappers/file.mapper';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
@@ -24,10 +24,11 @@ export class UserMapper {
     user.createdAt = raw.createdAt;
     user.updatedAt = raw.updatedAt;
     user.deletedAt = raw.deletedAt;
+    user.emailVerified = raw.emailVerified;
     return user;
   }
 
-  static toPersistence(user: User): UserEntity {
+  static toPersistence(user: Omit<User, 'id'>): UserEntity {
     let role: RoleEntity | undefined = undefined;
 
     if (user.role) {
@@ -53,9 +54,7 @@ export class UserMapper {
     }
 
     const userEntity = new UserEntity();
-    if (user.id && typeof user.id === 'number') {
-      userEntity.id = user.id;
-    }
+
     userEntity.email = user.email;
     userEntity.password = user.password;
     userEntity.previousPassword = user.previousPassword;
@@ -69,6 +68,7 @@ export class UserMapper {
     userEntity.createdAt = user.createdAt;
     userEntity.updatedAt = user.updatedAt;
     userEntity.deletedAt = user.deletedAt;
+    userEntity.emailVerified = user.emailVerified;
     return userEntity;
   }
 }

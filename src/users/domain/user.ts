@@ -27,5 +27,7 @@ export class User {
   status?: Status;
   createdAt: Date;
   updatedAt: Date;
+  emailVerified: Date | null;
+  @Expose({ groups: ['admin'] })
   deletedAt: Date;
 }
