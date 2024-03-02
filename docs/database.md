@@ -9,20 +9,13 @@
   - [Run migration](#run-migration)
   - [Revert migration](#revert-migration)
   - [Drop all tables in database](#drop-all-tables-in-database)
-- [Working with database schema (Mongoose)](#working-with-database-schema-mongoose)
-  - [Create schema](#create-schema)
 - [Seeding (TypeORM)](#seeding-typeorm)
   - [Creating seeds (TypeORM)](#creating-seeds-typeorm)
   - [Run seed (TypeORM)](#run-seed-typeorm)
   - [Factory and Faker (TypeORM)](#factory-and-faker-typeorm)
-- [Seeding (Mongoose)](#seeding-mongoose)
-  - [Creating seeds (Mongoose)](#creating-seeds-mongoose)
-  - [Run seed (Mongoose)](#run-seed-mongoose)
 - [Performance optimization (PostgreSQL + TypeORM)](#performance-optimization-postgresql--typeorm)
   - [Indexes and Foreign Keys](#indexes-and-foreign-keys)
   - [Max connections](#max-connections)
-- [Performance optimization (MongoDB + Mongoose)](#performance-optimization-mongodb--mongoose)
-  - [Design schema](#design-schema)
 
 ---
 
@@ -81,47 +74,11 @@ npm run schema:drop
 
 ---
 
-## Working with database schema (Mongoose)
-
-### Create schema
-
-1. Create entity file with extension `.schema.ts`. For example `post.schema.ts`:
-
-   ```ts
-   // /src/posts/infrastructure/persistence/document/entities/post.schema.ts
-
-   import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-   import { HydratedDocument } from 'mongoose';
-
-   export type PostSchemaDocument = HydratedDocument<PostSchemaClass>;
-
-   @Schema({
-     timestamps: true,
-     toJSON: {
-       virtuals: true,
-       getters: true,
-     },
-   })
-   export class PostSchemaClass extends EntityDocumentHelper {
-     @Prop()
-     title: string;
-
-     @Prop()
-     body: string;
-
-     // Here any fields that you need
-   }
-
-   export const PostSchema = SchemaFactory.createForClass(PostSchemaClass);
-   ```
-
----
-
 ## Seeding (TypeORM)
 
 ### Creating seeds (TypeORM)
 
-1. Create seed file with `npm run seed:create:relational -- --name=Post`. Where `Post` is name of entity.
+1. Create seed file with `npm run seed:create -- --name=Post`. Where `Post` is name of entity.
 1. Go to `src/database/seeds/relational/post/post-seed.service.ts`.
 1. In `run` method extend your logic.
 1. Run [npm run seed:run:relational](#run-seed-typeorm)
@@ -129,7 +86,7 @@ npm run schema:drop
 ### Run seed (TypeORM)
 
 ```bash
-npm run seed:run:relational
+npm run seed:run
 ```
 
 ### Factory and Faker (TypeORM)
@@ -239,23 +196,6 @@ npm run seed:run:relational
 
 ---
 
-## Seeding (Mongoose)
-
-### Creating seeds (Mongoose)
-
-1. Create seed file with `npm run seed:create:document -- --name=Post`. Where `Post` is name of entity.
-1. Go to `src/database/seeds/document/post/post-seed.service.ts`.
-1. In `run` method extend your logic.
-1. Run [npm run seed:run:document](#run-seed-mongoose)
-
-### Run seed (Mongoose)
-
-```bash
-npm run seed:run:document
-```
-
----
-
 ## Performance optimization (PostgreSQL + TypeORM)
 
 ### Indexes and Foreign Keys
@@ -271,15 +211,6 @@ DATABASE_MAX_CONNECTIONS=100
 ```
 
 You can think of this parameter as how many concurrent database connections your application can handle.
-
-## Performance optimization (MongoDB + Mongoose)
-
-### Design schema
-
-Designing schema for MongoDB is completely different from designing schema for relational databases. For best performance, you should design your schema according to:
-
-1. [MongoDB Schema Design Anti-Patterns](https://www.mongodb.com/developer/products/mongodb/schema-design-anti-pattern-massive-arrays)
-1. [MongoDB Schema Design Best Practices](https://www.mongodb.com/developer/products/mongodb/mongodb-schema-design-best-practices/)
 
 ---
 
