@@ -25,6 +25,9 @@ import { User } from 'src/users/domain/user';
 import { Session } from 'src/session/domain/session';
 import { UsersService } from 'src/users/users.service';
 import { SessionService } from 'src/session/session.service';
+import { randomInt } from 'crypto';
+import { VerificationTokenService } from 'src/verification-token/verification-token.service';
+import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +37,7 @@ export class AuthService {
     private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
+    private verificationTokenService: VerificationTokenService,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
@@ -65,15 +69,6 @@ export class AuthService {
       );
     }
 
-    if (!user.emailVerified) {
-      await this.mailService.userSignUp({
-        to: user.email!,
-        data: {
-          token: 112122,
-        },
-      });
-    }
-
     if (!user.password) {
       throw new HttpException(
         {
@@ -100,6 +95,37 @@ export class AuthService {
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    if (!user.emailVerified) {
+      const token = this.randomToken();
+
+      const verificationTokenExpiresIn = this.configService.getOrThrow(
+        'auth.verificationEmailExpires',
+        { infer: true },
+      );
+      const verificationTokenExpires =
+        Date.now() + ms(verificationTokenExpiresIn);
+      const verificationToken = await this.verificationTokenService.create({
+        email: user.email!,
+        token,
+        expires: new Date(verificationTokenExpires),
+      });
+
+      await this.mailService.userSignUp({
+        to: user.email!,
+        data: {
+          token: verificationToken.token,
+        },
+      });
+
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          message: 'EmailVerificationTokenSent',
+        },
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -207,7 +233,7 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    await this.usersService.create({
+    const user = await this.usersService.create({
       ...dto,
       email: dto.email,
       role: {
@@ -218,44 +244,37 @@ export class AuthService {
       },
     });
 
+    const token = this.randomToken();
+
+    const verificationTokenExpiresIn = this.configService.getOrThrow(
+      'auth.verificationEmailExpires',
+      { infer: true },
+    );
+    const verificationTokenExpires =
+      Date.now() + ms(verificationTokenExpiresIn);
+    const verificationToken = await this.verificationTokenService.create({
+      email: user.email!,
+      token,
+      expires: new Date(verificationTokenExpires),
+    });
+
     await this.mailService.userSignUp({
       to: dto.email,
       data: {
-        token: 112121,
+        token: verificationToken.token,
       },
     });
   }
 
-  async confirmEmail(hash: string): Promise<void> {
-    let userId: User['id'];
-
-    try {
-      const jwtData = await this.jwtService.verifyAsync<{
-        confirmEmailUserId: User['id'];
-      }>(hash, {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-      });
-
-      userId = jwtData.confirmEmailUserId;
-    } catch {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            hash: `invalidHash`,
-          },
-        },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
-
+  async confirmEmail(
+    passedToken: number,
+    email: string,
+  ): Promise<ConfirmEmailResponseType> {
     const user = await this.usersService.findOne({
-      id: userId,
+      email,
     });
 
-    if (!user || user?.status?.id !== StatusEnum.inactive) {
+    if (!user || user.emailVerified || !user.email) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
@@ -264,12 +283,53 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
+    const userToken = await this.verificationTokenService.findOne({
+      email: user.email,
+    });
 
-    user.status = {
-      id: StatusEnum.active,
-    };
+    if (!userToken) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: `notFound`,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (userToken.token !== passedToken || userToken.expires < new Date()) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            token: 'invalidToken',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    user.emailVerified = new Date();
 
     await this.usersService.update(user.id, user);
+
+    await this.verificationTokenService.delete(user.email);
+
+    const session = await this.sessionService.create({
+      user,
+    });
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+    });
+
+    return {
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
+    };
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -528,5 +588,9 @@ export class AuthService {
       refreshToken,
       tokenExpires,
     };
+  }
+  randomToken() {
+    const token = Math.floor(randomInt(100000, 999999));
+    return token;
   }
 }

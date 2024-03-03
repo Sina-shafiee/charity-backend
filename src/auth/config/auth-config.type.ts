@@ -5,6 +5,5 @@ export type AuthConfig = {
   refreshExpires?: string;
   forgotSecret?: string;
   forgotExpires?: string;
-  confirmEmailSecret?: string;
-  confirmEmailExpires?: string;
+  verificationEmailExpires?: string;
 };

@@ -28,7 +28,7 @@ export class UserMapper {
     return user;
   }
 
-  static toPersistence(user: Omit<User, 'id'>): UserEntity {
+  static toPersistence(user: User): UserEntity {
     let role: RoleEntity | undefined = undefined;
 
     if (user.role) {
@@ -54,6 +54,10 @@ export class UserMapper {
     }
 
     const userEntity = new UserEntity();
+
+    if (user.id && typeof user.id === 'number') {
+      userEntity.id = user.id;
+    }
 
     userEntity.email = user.email;
     userEntity.password = user.password;

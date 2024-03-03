@@ -9,6 +9,7 @@ import { UsersModule } from 'src/users/users.module';
 import { MailModule } from 'src/mail/mail.module';
 import { SessionModule } from 'src/session/session.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { VerificationTokenModule } from 'src/verification-token/verification-token.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     PassportModule,
     MailModule,
     JwtModule.register({}),
+    VerificationTokenModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],

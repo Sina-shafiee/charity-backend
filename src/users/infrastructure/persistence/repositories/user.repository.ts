@@ -10,7 +10,7 @@ import { User } from '../../../domain/user';
 import { UserMapper } from '../mappers/user.mapper';
 
 @Injectable()
-export class UserRepository {
+export class UsersRelationalRepository {
   constructor(
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
