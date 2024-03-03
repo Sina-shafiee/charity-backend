@@ -28,6 +28,7 @@ import { SessionService } from 'src/session/session.service';
 import { randomInt } from 'crypto';
 import { VerificationTokenService } from 'src/verification-token/verification-token.service';
 import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
+import { ResetPasswordTokenService } from 'src/reset-password-token/reset-password-token.service';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +39,7 @@ export class AuthService {
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
     private verificationTokenService: VerificationTokenService,
+    private resetPasswordTokenService: ResetPasswordTokenService,
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
@@ -337,7 +339,7 @@ export class AuthService {
       email,
     });
 
-    if (!user) {
+    if (!user || user.provider !== AuthProvidersEnum.email) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -355,46 +357,36 @@ export class AuthService {
 
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
-    const hash = await this.jwtService.signAsync(
-      {
-        forgotUserId: user.id,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
-        expiresIn: tokenExpiresIn,
-      },
-    );
+    const token = this.randomToken();
+
+    const resetToken = await this.resetPasswordTokenService.create({
+      email: user.email!,
+      expires: new Date(tokenExpires),
+      token,
+    });
+
+    console.log({ resetToken });
 
     await this.mailService.forgotPassword({
       to: email,
       data: {
-        hash,
+        token: resetToken.token,
         tokenExpires,
       },
     });
   }
 
-  async resetPassword(hash: string, password: string): Promise<void> {
-    let userId: User['id'];
+  async resetPassword(passedToken: number, password: string): Promise<void> {
+    const resetPasswordToken = await this.resetPasswordTokenService.findOne({
+      token: passedToken,
+    });
 
-    try {
-      const jwtData = await this.jwtService.verifyAsync<{
-        forgotUserId: User['id'];
-      }>(hash, {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
-      });
-
-      userId = jwtData.forgotUserId;
-    } catch {
+    if (!resetPasswordToken || resetPasswordToken.token !== passedToken) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            hash: `invalidHash`,
+            hash: `notFound`,
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -402,10 +394,14 @@ export class AuthService {
     }
 
     const user = await this.usersService.findOne({
-      id: userId,
+      email: resetPasswordToken.email,
     });
 
-    if (!user) {
+    if (
+      !user ||
+      !user.emailVerified ||
+      user.provider !== AuthProvidersEnum.email
+    ) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,

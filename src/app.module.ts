@@ -21,6 +21,8 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
+import { VerificationTokenModule } from './verification-token/verification-token.module';
+import { ResetPasswordTokenModule } from './reset-password-token/reset-password-token.module';
 
 @Module({
   imports: [
@@ -73,6 +75,8 @@ import { MailerModule } from './mailer/mailer.module';
     MailModule,
     MailerModule,
     HomeModule,
+    VerificationTokenModule,
+    ResetPasswordTokenModule,
   ],
 })
 export class AppModule {}

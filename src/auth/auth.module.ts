@@ -10,6 +10,7 @@ import { MailModule } from 'src/mail/mail.module';
 import { SessionModule } from 'src/session/session.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { VerificationTokenModule } from 'src/verification-token/verification-token.module';
+import { ResetPasswordTokenModule } from 'src/reset-password-token/reset-password-token.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { VerificationTokenModule } from 'src/verification-token/verification-tok
     MailModule,
     JwtModule.register({}),
     VerificationTokenModule,
+    ResetPasswordTokenModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],

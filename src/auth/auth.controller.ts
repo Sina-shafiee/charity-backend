@@ -73,7 +73,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
     return this.service.resetPassword(
-      resetPasswordDto.hash,
+      resetPasswordDto.token,
       resetPasswordDto.password,
     );
   }
