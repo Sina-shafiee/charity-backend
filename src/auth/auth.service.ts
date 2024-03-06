@@ -29,6 +29,8 @@ import { randomInt } from 'crypto';
 import { VerificationTokenService } from 'src/verification-token/verification-token.service';
 import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
 import { ResetPasswordTokenService } from 'src/reset-password-token/reset-password-token.service';
+import { RefreshTokenResponseType } from './types/refresh-token-response-type';
+import { I18nContext } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +45,7 @@ export class AuthService {
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
+    const i18n = I18nContext.current();
     const user = await this.usersService.findOne({
       email: loginDto.email,
     });
@@ -50,12 +53,10 @@ export class AuthService {
     if (!user) {
       throw new HttpException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: 'notFound',
-          },
+          status: HttpStatus.FORBIDDEN,
+          errors: i18n?.t('validation.notValidPassword'),
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -63,9 +64,7 @@ export class AuthService {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: `needLoginViaProvider:${user.provider}`,
-          },
+          errors: i18n?.t('validation.needLoginViaAnotherProvider'),
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
@@ -74,12 +73,10 @@ export class AuthService {
     if (!user.password) {
       throw new HttpException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            password: 'incorrectPassword',
-          },
+          status: HttpStatus.FORBIDDEN,
+          errors: i18n?.t('validation.notValidPassword'),
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -91,12 +88,10 @@ export class AuthService {
     if (!isValidPassword) {
       throw new HttpException(
         {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            password: 'incorrectPassword',
-          },
+          status: HttpStatus.FORBIDDEN,
+          errors: i18n?.t('validation.notValidPassword'),
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -124,10 +119,10 @@ export class AuthService {
 
       throw new HttpException(
         {
-          status: HttpStatus.FORBIDDEN,
-          message: 'EmailVerificationTokenSent',
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: 'emailVerificationTokenSent',
         },
-        HttpStatus.FORBIDDEN,
+        HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
 
@@ -145,7 +140,7 @@ export class AuthService {
       refreshToken,
       token,
       tokenExpires,
-      user,
+      ...user,
     };
   }
 
@@ -230,7 +225,7 @@ export class AuthService {
       refreshToken,
       token: jwtToken,
       tokenExpires,
-      user,
+      ...user,
     };
   }
 
@@ -330,7 +325,7 @@ export class AuthService {
       refreshToken,
       token,
       tokenExpires,
-      user,
+      ...user,
     };
   }
 
@@ -509,7 +504,7 @@ export class AuthService {
 
   async refreshToken(
     data: Pick<JwtRefreshPayloadType, 'sessionId'>,
-  ): Promise<Omit<LoginResponseType, 'user'>> {
+  ): Promise<RefreshTokenResponseType> {
     const session = await this.sessionService.findOne({
       id: data.sessionId,
     });

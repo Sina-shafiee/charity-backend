@@ -24,6 +24,7 @@ import { LoginResponseType } from './types/login-response.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from 'src/users/domain/user';
 import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
+import { RefreshTokenResponseType } from './types/refresh-token-response-type';
 
 @ApiTags('Auth')
 @Controller({
@@ -96,7 +97,7 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<Omit<LoginResponseType, 'user'>> {
+  public refresh(@Request() request): Promise<RefreshTokenResponseType> {
     return this.service.refreshToken({
       sessionId: request.user.sessionId,
     });
