@@ -1,0 +1,7 @@
+{
+  "emailRequired": "Email is required",
+  "passwordRequired": "Password is required",
+  "notValidEmail": "Provided email is invalid",
+  "notValidPassword": "Wrong email or password",
+  "needLoginViaAnotherProvider": "Please log in using the provider with which you created your account."
+}

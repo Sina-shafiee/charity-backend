@@ -13,7 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGoogleModule } from './auth-google/auth-google.module';
 import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
-import { HeaderResolver } from 'nestjs-i18n';
+import { CookieResolver, HeaderResolver, QueryResolver } from 'nestjs-i18n';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { MailModule } from './mail/mail.module';
 import { HomeModule } from './home/home.module';
@@ -49,20 +49,16 @@ import { ResetPasswordTokenModule } from './reset-password-token/reset-password-
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
           infer: true,
         }),
+        typesOutputPath: path.join(
+          __dirname,
+          '../src/generated/i18n.generated.ts',
+        ),
         loaderOptions: { path: path.join(__dirname, '/i18n/'), watch: true },
       }),
       resolvers: [
-        {
-          use: HeaderResolver,
-          useFactory: (configService: ConfigService<AllConfigType>) => {
-            return [
-              configService.get('app.headerLanguage', {
-                infer: true,
-              }),
-            ];
-          },
-          inject: [ConfigService],
-        },
+        { use: QueryResolver, options: ['lang'] },
+        { use: HeaderResolver, options: ['x-application-lang'] },
+        new CookieResolver(['Next-Locale']),
       ],
       imports: [ConfigModule],
       inject: [ConfigService],
