@@ -1,4 +1,6 @@
 {
-  "confirmEmail": "Confirm email",
-  "resetPassword": "Reset password"
+  "confirmEmail": "تایید ایمیل",
+  "resetPassword": "تغیر رمز عبور",
+  "account": "اکانت",
+  "user": "کاربر"
 }

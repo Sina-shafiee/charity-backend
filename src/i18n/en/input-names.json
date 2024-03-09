@@ -1,0 +1,7 @@
+{
+  "email": "email",
+  "password": "password",
+  "firstName": "first name",
+  "lastName": "last name",
+  "token": "confirmation code"
+}

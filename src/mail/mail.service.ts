@@ -16,6 +16,9 @@ export class MailService {
 
   async userSignUp(mailData: MailData<{ token: number }>): Promise<void> {
     const i18n = I18nContext.current();
+    const lang = i18n?.lang;
+    const dir = lang === 'fa' ? 'rtl' : 'ltr';
+    console.log({ lang });
     let emailConfirmTitle: MaybeType<string>;
     let text1: MaybeType<string>;
     let text2: MaybeType<string>;
@@ -50,6 +53,8 @@ export class MailService {
         text1,
         text2,
         text3,
+        dir,
+        lang,
       },
     });
   }

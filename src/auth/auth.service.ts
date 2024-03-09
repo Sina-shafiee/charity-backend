@@ -27,10 +27,10 @@ import { UsersService } from 'src/users/users.service';
 import { SessionService } from 'src/session/session.service';
 import { randomInt } from 'crypto';
 import { VerificationTokenService } from 'src/verification-token/verification-token.service';
-import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
 import { ResetPasswordTokenService } from 'src/reset-password-token/reset-password-token.service';
 import { RefreshTokenResponseType } from './types/refresh-token-response-type';
 import { I18nContext } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/generated/i18n.generated';
 
 @Injectable()
 export class AuthService {
@@ -263,10 +263,8 @@ export class AuthService {
     });
   }
 
-  async confirmEmail(
-    passedToken: number,
-    email: string,
-  ): Promise<ConfirmEmailResponseType> {
+  async confirmEmail(passedToken: number, email: string): Promise<void> {
+    const i18n = I18nContext.current<I18nTranslations>();
     const user = await this.usersService.findOne({
       email,
     });
@@ -275,7 +273,9 @@ export class AuthService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: `notFound`,
+          errors: i18n?.t('validation.notFound', {
+            args: { entityName: 'account' },
+          }),
         },
         HttpStatus.NOT_FOUND,
       );
@@ -293,15 +293,22 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (userToken.token !== passedToken || userToken.expires < new Date()) {
+    if (userToken.token !== passedToken) {
       throw new HttpException(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            token: 'invalidToken',
-          },
+          errors: i18n?.t('validation.invalidToken'),
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    if (userToken.expires < new Date()) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          errors: i18n?.t('validation.expiredToken'),
+        },
+        HttpStatus.CONFLICT,
       );
     }
 
@@ -310,23 +317,6 @@ export class AuthService {
     await this.usersService.update(user.id, user);
 
     await this.verificationTokenService.delete(user.email);
-
-    const session = await this.sessionService.create({
-      user,
-    });
-
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: user.id,
-      role: user.role,
-      sessionId: session.id,
-    });
-
-    return {
-      refreshToken,
-      token,
-      tokenExpires,
-      ...user,
-    };
   }
 
   async forgotPassword(email: string): Promise<void> {

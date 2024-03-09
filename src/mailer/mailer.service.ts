@@ -34,7 +34,7 @@ export class MailerService {
     if (templatePath) {
       const template = await fs.readFile(templatePath, 'utf-8');
       html = Handlebars.compile(template, {
-        strict: true,
+        strict: false,
       })(context);
     }
 

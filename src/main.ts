@@ -13,9 +13,9 @@ import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 import { filterOptions } from './utils/filter-options';
 
 const corsOptions = {
-  origin: 'http://127.0.0.1:3000',
+  origin: 'http://localhost:3000',
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-application-lang'],
   credentials: true,
 };
 

@@ -11,23 +11,17 @@ export class AuthEmailLoginDto {
   @IsEmail(
     {},
     {
-      message: i18nValidationMessage<I18nTranslations>(
-        'validation.notValidEmail',
-      ),
+      message: i18nValidationMessage<I18nTranslations>('validation.isInvalid'),
     },
   )
   @IsNotEmpty({
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.emailRequired',
-    ),
+    message: i18nValidationMessage<I18nTranslations>('validation.isRequired'),
   })
   email: string;
 
   @ApiProperty()
   @IsNotEmpty({
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.passwordRequired',
-    ),
+    message: i18nValidationMessage<I18nTranslations>('validation.isRequired'),
   })
   password: string;
 }

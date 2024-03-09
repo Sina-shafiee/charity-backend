@@ -1,7 +1,12 @@
 {
-  "emailRequired": "فیلد ایمیل ضروری میباشد",
-  "passwordRequired": "فیلد رمز عبور ضروری میباشد",
-  "notValidEmail": "ایمیل وارد شده صحیح نمیباشد",
-  "notValidPassword": "ایمیل یا پسورد وارد شده اشتباه میباشد",
-  "needLoginViaAnotherProvider": "لطفا با استفاده از سرویس دهنده‌ای که با آن حساب کاربری خود را ایجاد کرده‌اید، وارد شوید."
+  "isInvalid": "فیلد t(input-names.{property}) درست نمیباشد",
+  "notValidPassword": "ایمیل و یا پسورد وارد شده اشتباه میباشد",
+  "isRequired": "فیلد $t(input-names.{property}) ضروری میباشد",
+  "needLoginViaAnotherProvider": "لطفا با استفاده از سرویس دهنده‌ای که با آن حساب کاربری خود را ایجاد کرده‌اید، وارد شوید.",
+  "minLength": "$t(input-names.{property}) باید حداقل {constraints.0} کاراکتر باشد",
+  "emailAlreadyInUse": "ایمیل قبلاً به حساب دیگری پیوند داده شده است. رمز عبور را بازنشانی کنید",
+  "isNumber": "$t(input-names.{property}) باید فقط شامل عدد باشد",
+  "notFound": "$t(common.{entityName}) مورد نظر پیدا نشد",
+  "expiredToken": "کد تایید منقضی شده است",
+  "invalidToken": "کد تایید معتبر نمیباشد"
 }

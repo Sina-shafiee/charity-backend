@@ -1,7 +1,12 @@
 {
-  "emailRequired": "Email is required",
-  "passwordRequired": "Password is required",
-  "notValidEmail": "Provided email is invalid",
+  "isInvalid": "Provided $t(input-names.{property}) is invalid",
   "notValidPassword": "Wrong email or password",
-  "needLoginViaAnotherProvider": "Please log in using the provider with which you created your account."
+  "isRequired": "The $t(input-names.{property}) is required",
+  "needLoginViaAnotherProvider": "Please log in using the provider with which you created your account.",
+  "minLength": "$t(input-names.{property}) should be atleast {constraints.0} characters",
+  "emailAlreadyInUse": "Email is already linked to another account. try reseting your password",
+  "isNumber": "$t(input-names.{property}) Shoud only contain numbers",
+  "notFound": "${entityName} record was not found",
+  "expiredToken": "Confirmation token expired",
+  "invalidToken": "Provided token is not valid"
 }

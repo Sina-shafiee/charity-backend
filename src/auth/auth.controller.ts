@@ -23,7 +23,6 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseType } from './types/login-response.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from 'src/users/domain/user';
-import { ConfirmEmailResponseType } from './types/confirm-email-response.type';
 import { RefreshTokenResponseType } from './types/refresh-token-response-type';
 
 @ApiTags('Auth')
@@ -55,7 +54,7 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
-  ): Promise<ConfirmEmailResponseType> {
+  ): Promise<void> {
     return this.service.confirmEmail(
       confirmEmailDto.token,
       confirmEmailDto.email,

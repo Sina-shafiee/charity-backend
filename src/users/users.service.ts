@@ -12,6 +12,8 @@ import { RoleEnum } from 'src/roles/roles.enum';
 import { FilesService } from 'src/files/files.service';
 import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
+import { I18nContext } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/generated/i18n.generated';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +23,7 @@ export class UsersService {
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
+    const i18n = I18nContext.current<I18nTranslations>();
     const clonedPayload = {
       provider: AuthProvidersEnum.email,
       ...createProfileDto,
@@ -39,9 +42,7 @@ export class UsersService {
         throw new HttpException(
           {
             status: HttpStatus.UNPROCESSABLE_ENTITY,
-            errors: {
-              email: 'emailAlreadyExists',
-            },
+            errors: i18n?.t('validation.emailAlreadyInUse'),
           },
           HttpStatus.UNPROCESSABLE_ENTITY,
         );
