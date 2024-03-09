@@ -18,7 +18,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/main",
     "commitlint": "commitlint --edit",
     "commitizen": "exec < /dev/tty && git cz --hook || true",
     "start:dev": "nest start --watch",
