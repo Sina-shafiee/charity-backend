@@ -263,7 +263,7 @@ export class AuthService {
   }
 
   async confirmEmail(passedToken: number, email: string): Promise<void> {
-    const i18n = I18nContext.current<>();
+    const i18n = I18nContext.current();
     const user = await this.usersService.findOne({
       email,
     });
