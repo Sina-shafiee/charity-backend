@@ -49,10 +49,6 @@ import { ResetPasswordTokenModule } from './reset-password-token/reset-password-
         fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
           infer: true,
         }),
-        typesOutputPath: path.join(
-          __dirname,
-          '../src/generated/i18n.generated.ts',
-        ),
         loaderOptions: { path: path.join(__dirname, '/i18n/'), watch: true },
       }),
       resolvers: [

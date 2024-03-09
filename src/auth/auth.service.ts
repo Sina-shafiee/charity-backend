@@ -30,7 +30,6 @@ import { VerificationTokenService } from 'src/verification-token/verification-to
 import { ResetPasswordTokenService } from 'src/reset-password-token/reset-password-token.service';
 import { RefreshTokenResponseType } from './types/refresh-token-response-type';
 import { I18nContext } from 'nestjs-i18n';
-import { I18nTranslations } from 'src/generated/i18n.generated';
 
 @Injectable()
 export class AuthService {
@@ -264,7 +263,7 @@ export class AuthService {
   }
 
   async confirmEmail(passedToken: number, email: string): Promise<void> {
-    const i18n = I18nContext.current<I18nTranslations>();
+    const i18n = I18nContext.current<>();
     const user = await this.usersService.findOne({
       email,
     });
