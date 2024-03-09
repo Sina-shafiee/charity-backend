@@ -5,29 +5,34 @@ import { Status } from 'src/statuses/domain/status';
 
 export class User {
   id: number | string;
-
-  @Expose({ groups: ['me', 'admin'] })
-  email: string | null;
-
-  @Exclude({ toPlainOnly: true })
-  password?: string;
-
-  @Exclude({ toPlainOnly: true })
-  previousPassword?: string;
-
-  @Expose({ groups: ['me', 'admin'] })
-  provider: string;
-
-  @Expose({ groups: ['me', 'admin'] })
-  socialId?: string | null;
   firstName: string | null;
   lastName: string | null;
   photo?: FileType | null;
   role?: Role | null;
-  status?: Status;
   createdAt: Date;
   updatedAt: Date;
+
+  @Exclude()
+  password?: string;
+
+  @Exclude()
+  previousPassword?: string;
+
+  @Expose({ groups: ['me', 'admin'] })
+  email: string | null;
+
+  @Expose({ groups: ['admin'] })
+  provider: string;
+
+  @Expose({ groups: ['admin'] })
+  socialId?: string | null;
+
+  @Expose({ groups: ['admin'] })
+  status?: Status;
+
+  @Expose({ groups: ['admin'] })
   emailVerified: Date | null;
+
   @Expose({ groups: ['admin'] })
   deletedAt: Date;
 }
