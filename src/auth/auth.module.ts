@@ -8,7 +8,6 @@ import { AnonymousStrategy } from './strategies/anonymous.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { MailModule } from 'src/mail/mail.module';
 import { SessionModule } from 'src/session/session.module';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { VerificationTokenModule } from 'src/verification-token/verification-token.module';
 import { ResetPasswordTokenModule } from 'src/reset-password-token/reset-password-token.module';
 
@@ -23,7 +22,7 @@ import { ResetPasswordTokenModule } from 'src/reset-password-token/reset-passwor
     ResetPasswordTokenModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],
+  providers: [AuthService, JwtStrategy, AnonymousStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

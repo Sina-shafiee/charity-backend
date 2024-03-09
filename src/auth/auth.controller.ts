@@ -23,7 +23,6 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseType } from './types/login-response.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from 'src/users/domain/user';
-import { RefreshTokenResponseType } from './types/refresh-token-response-type';
 
 @ApiTags('Auth')
 @Controller({
@@ -87,19 +86,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public me(@Request() request): Promise<NullableType<User>> {
     return this.service.me(request.user);
-  }
-
-  @ApiBearerAuth()
-  @SerializeOptions({
-    groups: ['me'],
-  })
-  @Post('refresh')
-  @UseGuards(AuthGuard('jwt-refresh'))
-  @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<RefreshTokenResponseType> {
-    return this.service.refreshToken({
-      sessionId: request.user.sessionId,
-    });
   }
 
   @ApiBearerAuth()
