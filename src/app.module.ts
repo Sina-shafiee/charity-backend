@@ -36,6 +36,7 @@ import { ResetPasswordTokenModule } from './reset-password-token/reset-password-
         fileConfig,
         googleConfig,
       ],
+      envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
