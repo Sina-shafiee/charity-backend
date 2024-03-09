@@ -12,20 +12,21 @@ import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 import { filterOptions } from './utils/filter-options';
 
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-application-lang'],
-  credentials: true,
-};
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get(ConfigService<AllConfigType>);
+
+  const corsOptions = {
+    origin: configService.getOrThrow('app.frontendDomain', { infer: true }),
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-application-lang'],
+    credentials: true,
+  };
 
   app.enableCors(corsOptions);
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  const configService = app.get(ConfigService<AllConfigType>);
   app.enableShutdownHooks();
   app.setGlobalPrefix(
     configService.getOrThrow('app.apiPrefix', { infer: true }),
