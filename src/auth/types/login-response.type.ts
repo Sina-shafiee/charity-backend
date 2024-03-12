@@ -1,8 +1,7 @@
 import { User } from 'src/users/domain/user';
 
-export type LoginResponseType = Readonly<
-  User & {
-    token: string;
-    tokenExpires: number;
-  }
->;
+export type LoginResponseType = Readonly<{
+  token: string;
+  tokenExpires: number;
+  user: User;
+}>;

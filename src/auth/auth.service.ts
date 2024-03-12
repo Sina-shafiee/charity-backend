@@ -131,7 +131,7 @@ export class AuthService {
     return {
       token,
       tokenExpires,
-      ...user,
+      user,
     };
   }
 
@@ -211,7 +211,7 @@ export class AuthService {
     return {
       token: jwtToken,
       tokenExpires,
-      ...user,
+      user,
     };
   }
 
